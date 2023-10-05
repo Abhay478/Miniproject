@@ -1,0 +1,72 @@
+\documentclass{amsart}
+
+\input{~/Code/Lang/Latex/cheatsheet.tex}
+
+\begin{document}
+    \title{Quantum Networking Problem Statement}
+    \author{Abhay Shankar K: cs21btech11001}
+    \maketitle
+
+    \section{Barebones}
+
+    We are given a static network in the form of a graph \(\mathcal{G} = \brak{V, \mathcal{E}}\), and a demand vector \(\mathcal{D}\). The demand vector is a mapping from the set of all pairs of nodes in the graph to a non-negative integer. 
+
+    Each edge is a 3-tuple \(\brak{c, \tau, \Gamma}\) with \begin{itemize}
+        \item \(c\) being the cost of the link
+        \item \(\tau\) being the cooldown time
+        \item \(\Gamma\) being the capacity of the link - the number of bell pairs one can send across.
+    \end{itemize}
+
+    Each element of the demand vector is a 3-tuple \(\brak{u, v, d}\), with \begin{itemize}
+        \item \(u\): source node
+        \item \(v\): destination node
+        \item \(d\): the number of bell pairs to be sent
+    \end{itemize}
+
+    We seek to find a routing scheme that minimizes the cost of the network, while satisfying the demand vector. We will interpret this as assigning each edge to a given demand for a time slot, i.e., finding a function \(f \dr{T \times \mathcal{E}}{\mathcal{P}(\mathcal{D})}\) that minimises the cost 
+        \[\mathcal{C} = \sum_{t \in T} \brak{\sum_{e \in E'(t)} c\brak{e}}\]
+
+
+    where \(E'(t) = \cbrak{e \in \mathcal{E} \st f(t, e) \neq \{\} }\) is the set of all edges that are active at time \(t\), and \(T \subset \mathbb{N}\) is the set of all time slots during which the network is active.
+
+    Alternatively, we could also choose to optimise any of the following quantities, or establish relationships between their optimal values: \begin{itemize}
+        \item Minimise the total time taken, i.e. \abs{T}
+        \item Maximise the utilisation of the network, i.e. \(\displaystyle \frac{\sum_{t \in T} \abs{E'(t)}}{\abs{\mathcal{E}} \abs{T}}\)
+        \item Minimise the maximum utilisation of the network, i.e. \(\displaystyle \max_{t \in T} \frac{\abs{E'(t)}}{\abs{\mathcal{E}}}\), e.g. congestion control.
+    \end{itemize}
+    Our assumptions are as follows
+    \begin{itemize}
+        \item Discretized times slots
+        \item The bell-pair measurement never fails.
+        \item The quantum links between two nodes do not fail.
+        \item All measurements are instantaneous, and occur simultaneously relative to a synchronised global clock.
+    \end{itemize}
+
+    In the following sections, we shall relax these assumptions, progressing towards a more practical model.
+
+    \section{Dynamic demands}
+
+    We now consider the case where the demand vector is not static, but changes over time. We will assume that the demand vector is a function \[\mathcal{D} \dr{T \times V \times V}{\mathbb{N}}\] and that the demand at time \(t\) from node \(u\) to node \(v\) i.e. \(\mathcal{D}(t, u, v)\) is known in advance \( \forall t \in T, u, v \in V\).
+
+    The cost function remains the same, but the allocation function (our objective) needs to be recomputed at each time instance or each time the demand vector changes.
+
+    Clearly, such re-evaluation is not scalable, so we have two choices \begin{itemize}
+        \item Experiment with clever ways of reusing the previous allocation function to compute the new one.
+        \item Abandon the link allocation model and use standard routing algorithms. We chose not to do this for the simpler case because the link allocation function is a more general model, and we can always use it to implement a routing algorithm.
+    \end{itemize} 
+
+    \subsection{Oracular dynamic demands}
+
+    As an intermediate between truly dynamic demand vectors and a static demand, we can consider a demand matrix \(\mathcal{D}\) where the i'th row represents the demand vector at time \(i\). We can then use the same model as before - no changes are necessary. This means that the demand is dynamic, but the algorithm knows the demand in advance.
+
+    \section{Fallible links}
+
+    We now consider the case where the links between nodes can fail. We assume \begin{itemize}
+        \item Links are independent, i.e. the failure of one link does not affect the failure of another. 
+        \item The failure of a link is independent of the demand on that link.
+    \end{itemize}
+
+    If the network is represented using an adjacency matrix, we can encode the probabilistic network evolution with another matrix, and multiply the two matrices to get the new adjacency matrix. 
+
+    Generally, we can leverage the existant routing algorithms for classical networks.
+\end{document}

@@ -1,0 +1,146 @@
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage[parfill]{parskip}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\usepackage[normalem]{ulem}
+\usepackage{makecell,booktabs}
+% hello
+\newcommand{\me}[1]{
+	\title{#1}
+    	\author{Abhay Shankar K: cs21btech11001}
+    	\today
+    	\maketitle
+}
+\newcommand{\bme}{
+	\author{Abhay Shankar K: cs21btech11001}
+
+	\begin{frame}
+    	\titlepage 
+	\end{frame}
+
+	\begin{frame}{Outline}
+    	\tableofcontents
+	\end{frame}
+}
+
+\newcommand{\Me}[1]{
+	\title{#1}
+    \author{Abhay Shankar K}
+    \maketitle
+}
+\newcommand{\Bme}{
+	\author{Abhay Shankar K}
+
+	\begin{frame}
+    	\titlepage 
+	\end{frame}
+
+	\begin{frame}{Outline}
+    	\tableofcontents
+	\end{frame}
+}
+
+
+%LINALG
+\newcommand*{\cond}[2]{{#1} \middle| {#2}}
+\DeclareMathOperator*{\uni}{\exists !} % unique
+\DeclareMathOperator*{\all}{\forall} % eh
+\DeclareMathOperator*{\bas}{<<} % is a (ordered) basis of
+\DeclareMathOperator*{\onb}{<<|} % is an orthonormal basis of
+\newcommand*{\st}{\ |\ } % such that
+\newcommand{\seq}[2]{\cbrak{#1_1, \ldots, #1_{#2}}} % sequence
+\newcommand{\tup}[2]{\brak{#1_1, \ldots, #1_{#2}}} % tuple
+\newcommand{\sqb}[2]{\sbrak{#1_1, \ldots, #1_{#2}}} % list, also matrix represented as M = [a1, a2...] with rows/columns.
+\newcommand{\zseq}[2]{\cbrak{#1_0, \ldots, #1_{#2}}} % sequence
+\newcommand{\ztup}[2]{\brak{#1_0, \ldots, #1_{#2}}} % tuple
+\newcommand{\zsqb}[2]{\sbrak{#1_0, \ldots, #1_{#2}}} % list, also matrix represented as M = [a1, a2...] with rows/columns.
+\newcommand{\pseq}[3]{\cbrak{#1_{#3}, \ldots, #1_{#2}}} % partial sequence initialy not 1
+\newcommand{\iseq}[1]{\cbrak{#1_1, \ldots}} % infinite sequence
+\newcommand{\izseq}[1]{\cbrak{#1_0, \ldots}} % infinite sequence
+\newcommand{\rep}[3]{\ensuremath{\displaystyle \sum_{i = 1}^{#3} #2_i#1_i}} %representation as linear combination
+\newcommand{\vrep}[4]{\ensuremath{\displaystyle \sum_{#4 = 1}^{#3} #2_{#4}#1_{#4}}} % variable not i
+\newcommand{\prep}[4]{\ensuremath{\Sigma_{i = #4}^{#3} #2_i#1_i}} % initially not 1
+\newcommand{\dr}[2]{\ensuremath{: #1 \rightarrow #2}} % domain-range
+\newcommand{\con}[2]{\ensuremath{\all #1 \in #2}} %domain specs
+\newcommand{\conr}[2]{\con{#1}{\sbrak{#2}}} % for natural numbers
+\newcommand{\crdv}[2]{\sbrak{#1}_#2} %coordinates for vectors with a given basis.
+\newcommand{\crdm}[3]{\sbrak{#1}_{#2, #3}} % for matrices
+\newcommand{\nsp}[1]{\ensuremath{N\cbrak{#1}}} % nullspace
+\newcommand{\nty}[1]{\ensuremath{n\cbrak{#1}}} % nullity
+\newcommand{\dm}[1]{\ensuremath{dim\cbrak{#1}}} % dimension
+\newcommand{\rng}[1]{\ensuremath{R\cbrak{#1}}} % range
+\newcommand{\rnk}[1]{\ensuremath{r\cbrak{#1}}} % rank
+\providecommand{\jor}[2]{\ensuremath{P_{#1}\brak{#2}}}
+\newcommand{\spbr}[2]{\ensuremath{\brak{\cond{#1}{#2}}}}
+\newcommand{\spsbr}[2]{\ensuremath{\sbrak{\cond{#1}{#2}}}}
+\newcommand{\spcbr}[2]{\ensuremath{\cbrak{\cond{#1}{#2}}}}
+\newcommand{\spabr}[2]{\ensuremath{\abrak{\cond{#1}{#2}}}}
+\newcommand{\ip}[2]{\spbr{#1}{#2}} % inner product
+\newcommand{\braket}[2]{\spabr{#1}{#2}}
+
+%EP
+\newcommand{\er}[1]{\ensuremath{\Delta#1}} % error
+\newcommand{\erfrac}[2]{{\ensuremath\frac{\er{#1}}{#2}}} % eh
+\newcommand{\reler}[1]{\erfrac{#1}{#1}} % relative error
+\newcommand{\res}[2]{\ensuremath{\underline{#1 \mp #2}}} % result with uncertainty
+\newcommand{\sci}[2]{\ensuremath{#1 \cdot 10^{#2}}} % scientific notation
+\newcommand{\normpow}[3]{\ensuremath{\brak{#1^2 + #2^2}^{#3}}} % powers of standard norm
+\newcommand{\e}[1]{\ensuremath{e^{#1}}} % exponent
+
+%BEAMER
+\newcommand{\bfr}[2]{\section{#1} \begin{frame}{#1} #2 \end{frame}} % beamer frames
+\newcommand{\story}[3]{\bfr{}{\begin{block}{As a } #1 \end{block} \begin{block}{I want to} #2 \end{block} \begin{block}{Purpose} #3 \end{block}}} % User stories
+
+%GVV
+\newcommand{\abs}[1]{\ensuremath{\left|#1\right|}} % mod
+\newcommand{\ceil}[1]{\ensuremath{\left\lceil#1\right\rceil}} % ceil
+\newcommand{\floor}[1]{\ensuremath{\left\lceil#1\right\rceil}} % floor
+\newcommand{\brak}[1]{\ensuremath{\left(#1\right)}} % brackets
+\newcommand{\abrak}[1]{\ensuremath{\left\langle#1\right\rangle}}
+\newcommand{\sbrak}[1]{\ensuremath{\left[#1\right]}}
+\newcommand{\cbrak}[1]{\ensuremath{\left\{#1\right\}}}
+\newcommand{\myvec}[1]{\ensuremath{\begin{pmatrix}#1\end{pmatrix}}} % matrices
+\providecommand{\mn}[2]{\ensuremath{min\brak{#1, #2}}} % min
+\providecommand{\mx}[2]{\ensuremath{max\brak{#1, #2}}} % max
+\providecommand{\rpr}[2]{\ensuremath{P_{#1}\brak{#2}}} % random variable notation
+\providecommand{\spr}[1]{\ensuremath{p\brak{#1}}} % simple notation
+\providecommand{\cpr}[2]{\ensuremath{\spr{\cond{#1}{#2}}}} %conditional probability
+\providecommand{\pdf}[2]{\ensuremath{p_{#2}\left(#1\right)}} % probability density notation
+\providecommand{\cdf}[2]{\ensuremath{P_{#2}\left(#1\right)}} % cumulative distribution notation
+\providecommand{\inv}[1]{\ensuremath{\frac{1}{#1}}} % inverse
+\newcommand{\solution}{\noindent \textbf{Solution: }}
+\newcommand{\question}{\noindent \textbf{Question: }}
+\newcommand{\req}{\noindent \textbf{Required: }}
+\providecommand{\norm}[1]{\left\lVert#1\right\rVert} % norm
+\newcommand*{\permcomb}[4][0mu]{{{}^{#3}\mkern#1#2_{#4}}} % P and C
+\newcommand*{\perm}[1][-3mu]{\permcomb[#1]{P}}
+\newcommand*{\comb}[1][-1mu]{\permcomb[#1]{C}}
+\newcommand{\ev}[1]{\mathbb{E}\sbrak{#1}}
+\newcommand{\cov}[1]{\text{cov}\sbrak{#1}}
+\newcommand{\var}[1]{\text{var}\sbrak{#1}}
+
+%TOC
+\newcommand{\is}[2]{\textbf{\underline{#1}}: {#2}
+
+}
+\newcommand{\si}[2]{\textit{#1}: {#2}
+
+}
+\newcommand*{\ass}{ \ensuremath{\leftarrow} }
+\newcommand*{\gt}{ \ensuremath{\rightarrow} }
+\newcommand{\derv}{\ensuremath{\stackrel{*}{\implies}}}
+\newcommand{\sstr}[3]{\ensuremath{#1_{#2} \ldots #1_{#3}}}
+\newcommand{\str}[2]{\ensuremath{#1_1 \ldots #1_{#2}}}
+\newcommand*{\indist}[3]{#1 $\equiv_{#3}$ #2}
+\newcommand{\pset}[1]{\ensuremath{\mathcal{P}\brak{#1}}}
+\newcommand{\pdt}[3]{\ensuremath{#1, #2 \gt #3}}
+\newcommand{\spc}[2]{\cbrak{#1}^{#2}}
+\newcommand{\bigO}[1]{\mathcal{O}\brak{#1}}
+% FOML
+\newcommand{\ex}[1]{\mathbb{E}\sbrak{#1}}
+\newcommand{\gauss}[1]{\mathcal{N}\brak{#1}}
+\newcommand{\iter}[2]{{#1}^{\brak{#2}}}

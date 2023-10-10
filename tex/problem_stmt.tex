@@ -1,6 +1,6 @@
 \documentclass{amsart}
 
-\input{~/Code/Lang/Latex/cheatsheet.tex}
+\input{cheatsheet.tex}
 
 \begin{document}
     \title{Quantum Networking Problem Statement}
@@ -18,46 +18,104 @@
     \end{itemize}
 
     Each element of the demand vector is a 3-tuple \(\brak{u, v, d}\), with \begin{itemize}
+        \item \(\alpha\): The demand number, to uniquely identify each demand.
         \item \(u\): source node
         \item \(v\): destination node
         \item \(d\): the number of bell pairs to be sent
     \end{itemize}
 
-    We seek to find a routing scheme that minimizes the cost of the network, while satisfying the demand vector. We will interpret this as assigning each edge to a given demand for a time slot, i.e., finding a function \(f \dr{T \times \mathcal{E}}{\mathcal{P}(\mathcal{D})}\) that minimises the cost 
+    We seek to find a routing scheme that minimizes the cost of the network, while satisfying the demand vector. 
+    
+    \subsection{Allocation function}.
+
+    We may interpret this as assigning each edge to a given demand for a time slot, i.e., finding a function \(f \dr{T \times \mathcal{E}}{\mathcal{P}(\mathcal{D \times \mathbb{N}})}\) that minimises the cost 
         \[\mathcal{C} = \sum_{t \in T} \brak{\sum_{e \in E'(t)} c\brak{e}}\]
 
 
-    where \(E'(t) = \cbrak{e \in \mathcal{E} \st f(t, e) \neq \{\} }\) is the set of all edges that are active at time \(t\), and \(T \subset \mathbb{N}\) is the set of all time slots during which the network is active.
+    where \begin{itemize}
+        \item \(E'(t) = \cbrak{e \in \mathcal{E} \st f(t, e) \neq \{\} }\) is the set of all edges that are active at time \(t\)
+        \item \(T \subset \mathbb{N}\) is the set of all time slots during which the network operates.
+        \item The output of the allocation function is a set of (\(\alpha\), n) pairs, which specify the number of qubits (n) of which demand (\(\alpha\)) the edge should transmit. This corresponds to \((\alpha_1, \gamma_1)..((\alpha_k, \gamma_k))\) here \(\Sigma_k \gamma_k \leq \Gamma\) for a given edge, and \(\alpha_k\) is a valid demand.
+    \end{itemize}, and is active.
+
+    Furthermore, such a function obey the standard flow conservation constraints.
+    % \begin{align*}
+    %     \all t \in T, u \in V \setminus \cbrak{v \st \exists e \in E'(t) \st v \in e} \st \sum_{v \in V} \abs{f(t, u, v)} = \sum_{v \in V} \abs{f(t, v, u)} \\
+    %     \all t \in T, v \in V \setminus \cbrak{u \st \exists e \in E'(t) \st u \in e} \st \sum_{u \in V} \abs{f(t, u, v)} = \sum_{u \in V} \abs{f(t, v, u)} \\
+    % \end{align*}
+
+    \subsection{Routing}.
+
+    We may also approach this problem from the viewpoint of classical networks. We shall consider peering models now and discuss hierarchial models later. 
+
+    Each vertex \(v\) in \(\mathcal{G}\) maintains a vector of routing information, viz. the routing vector \(\mathcal{R}_v\), which it uses to create quantum links. When a request for routing arises (i.e. an entangled qubit and a destination address), the node consults it's routing vector and 'forwards' the qubit onto the next node in its path, by a bell-state swap. 
+
+    The construction of the routing vector may be handled in several ways of increasing complexity and efficacy. The simplest is to use a shortest path algorithm, (Dijkstra), and compute te shortest paths betwen every pair of nodes in the network. While the routing vector may change in each timeslot, it need not be recomputed. 
+    
+    This is ineffctive, as several topologies may attempt to funnel all data through a single link, causing queueing delays due to the severe bottleneck. While this is no flaw if we seek only to minimise the cost, it becomes pertinent for other quantites we may wish to optimise, as mentioned later.
+
+    This may be solved using a slight modification of Dijksta's shortest path algorithm. The algorithm calculates all the shortest paths from a given node to all other nodes in the network - while it is doing so, we may also calculate the capacity oof each of these paths, a divide the demand between them. 
+
+    Further modifications may introduce a new mertic combining both the cost and the capacity of an edge, and use this instead of the costs when calculating shortest paths. Suggestions for such metrics include their ratio, \(\frac{c}{\Gamma}\), or a saturation test: 0 if the edge is saturated, \(c\) otherwise. The latter approach assumes a knowledge of local and global network state, which may be obtained by a centralised controller, or by a distributed algorithm. 
+
+    \subsection{Note about omniscience}
+
+    Given all the tasks a machine must perform in the future, it may compute a priori the optimal resource-allocation function, and use it to perform those tasks without any additional computational overhead. 
+    
+    An example of this is the SJF (shortest job first) scheduling algorithm, which is optimal for minimizing the average waiting time of a set of tasks but requires foreknowledge of their duration.
+
+    In real networks, such knowledge is unavailable, and this solution is inapplicable. However, it is useful to consider this case as a benchmark for the performance of other algorithms.
+
+    The allocation function \sout{appears to be} is of this form, and cannot be utilised in case of a dynamic demand vector.
+
+    \subsection{Optimisation Alternatives}
 
     Alternatively, we could also choose to optimise any of the following quantities, or establish relationships between their optimal values: \begin{itemize}
         \item Minimise the total time taken, i.e. \abs{T}
         \item Maximise the utilisation of the network, i.e. \(\displaystyle \frac{\sum_{t \in T} \abs{E'(t)}}{\abs{\mathcal{E}} \abs{T}}\)
         \item Minimise the maximum utilisation of the network, i.e. \(\displaystyle \max_{t \in T} \frac{\abs{E'(t)}}{\abs{\mathcal{E}}}\), e.g. congestion control.
-    \end{itemize}
-    Our assumptions are as follows
-    \begin{itemize}
-        \item Discretized times slots
-        \item The bell-pair measurement never fails.
-        \item The quantum links between two nodes do not fail.
-        \item All measurements are instantaneous, and occur simultaneously relative to a synchronised global clock.
+        \item Maximise the minimum utilisation of the network, i.e., \(\displaystyle \min_{t \in T} \frac{\abs{E'(t)}}{\abs{\mathcal{E}}}\), e.g. load balancing.
     \end{itemize}
 
-    In the following sections, we shall relax these assumptions, progressing towards a more practical model.
+    or even some other metric built from these.
+
+    \subsection{Assumptions}
+
+    Our assumptions are as follows
+    \begin{itemize}
+        \item Constant classical topology, i.e. quantum links are consumed and revived but classical links are fixed.
+        \item Constant edge properties - i.e. cost, capacity, cooldown time do not change with time.
+        \item Static demand vector, without duplicate elements between the same pair of nodes.
+        \item Discretized times slots, with instantaneous operations occuring within a timeslot in a well-defined oorder.
+        \item Measurement Infallibility: The bell-pair measurement never fails.
+        \item Link Infallibility: The quantum links between two nodes do not fail.
+        \item Synchronicity: All measurements are instantaneous, and occur simultaneously relative to a synchronised global clock.
+    \end{itemize}
+
+    In the following sections, we shall relax several of these assumptions, progressing towards a more practical model.
 
     \section{Dynamic demands}
 
-    We now consider the case where the demand vector is not static, but changes over time. We will assume that the demand vector is a function \[\mathcal{D} \dr{T \times V \times V}{\mathbb{N}}\] and that the demand at time \(t\) from node \(u\) to node \(v\) i.e. \(\mathcal{D}(t, u, v)\) is known in advance \( \forall t \in T, u, v \in V\).
+    \subsection{Allocation function}.
 
-    The cost function remains the same, but the allocation function (our objective) needs to be recomputed at each time instance or each time the demand vector changes.
+    We now consider the case where the demand vector is not static, but changes over time. We will assume that the demand vector is a function \[\mathcal{D} \dr{T \times V \times V}{\mathbb{N}}\] and that the demand at time \(t\) from node \(u\) to node \(v\) i.e. \(\mathcal{D}(t, u, v)\) is known at t but not at t - 1 \(\forall t \in T, u, v \in V\).
 
-    Clearly, such re-evaluation is not scalable, so we have two choices \begin{itemize}
-        \item Experiment with clever ways of reusing the previous allocation function to compute the new one.
-        \item Abandon the link allocation model and use standard routing algorithms. We chose not to do this for the simpler case because the link allocation function is a more general model, and we can always use it to implement a routing algorithm.
-    \end{itemize} 
+    The cost function remains the same, but the allocation function (our potential objective) needs to be recomputed at each time instance or each time the demand vector changes.
+
+    % Clearly, such re-evaluation is not scalable, so we have two choices \begin{itemize}
+    %     \item Experiment with clever ways of reusing the previous allocation function to compute the new one.
+    %     \item Abandon the link allocation model and use standard routing algorithms. We chose not to do this for the simpler case because the link allocation function is a more general model, and we can always use it to implement a routing algorithm.
+    % \end{itemize} 
+
+    \subsection{Routing}
+
+    Alternatively, if we use a routing scheme, we approach a paradigm more resembling classical networks. 
+
+
 
     \subsection{Oracular dynamic demands}
 
-    As an intermediate between truly dynamic demand vectors and a static demand, we can consider a demand matrix \(\mathcal{D}\) where the i'th row represents the demand vector at time \(i\). We can then use the same model as before - no changes are necessary. This means that the demand is dynamic, but the algorithm knows the demand in advance.
+    As an intermediate between truly dynamic demand vectors and a static demand, we can consider a demand matrix \(\mathcal{D}\) where the i'th row represents the demand vector at time \(i\). We can then use the same model as before - no changes are necessary. This means that \(\forall t u, v \mathcal{D}(u, v, t)\) is known at \(t = 0\).
 
     \section{Fallible links}
 
@@ -68,5 +126,5 @@
 
     If the network is represented using an adjacency matrix, we can encode the probabilistic network evolution with another matrix, and multiply the two matrices to get the new adjacency matrix. 
 
-    Generally, we can leverage the existant routing algorithms for classical networks.
+    Generally, we can leverage the extant routing algorithms for classical networks.
 \end{document}

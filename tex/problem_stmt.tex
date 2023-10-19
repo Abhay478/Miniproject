@@ -4,7 +4,7 @@
 
 \begin{document}
     \title{Quantum Networking Problem Statement}
-    \author{Abhay Shankar K: cs21btech11001}
+    \author{Abhay Shankar K, Rishit D, Sakshi Takale}
     \maketitle
 
     \section{Barebones}
@@ -24,25 +24,34 @@
         \item \(d\): the number of bell pairs to be sent
     \end{itemize}
 
-    We seek to find a routing scheme that minimizes the cost of the network, while satisfying the demand vector. 
+    \textbf{Objective}:
+    We seek to find a routing protocol that minimizes the cost of the network, while satisfying the demand. 
+
+    \textbf{Secondary Objective} : We also wish to find the theoretically optimal routing scheme, i.e. an Allocation function, to serve as a benchmark for subsequent practical algorithms.
     
     \subsection{Allocation function}.
 
-    We may interpret this as assigning each edge to a given demand for a time slot, i.e., finding a function \(f \dr{T \times \mathcal{E}}{\mathcal{P}(\mathcal{D \times \mathbb{N}})}\) that minimises the cost 
+    We may interpret the problem of optimal network utilisation as assigning each edge to a given set of demands for a time slot, i.e., finding a function \(f \dr{T \times \mathcal{E}}{\mathcal{P}(\mathcal{D \times \mathbb{N}})}\) that minimises the cost 
         \[\mathcal{C} = \sum_{t \in T} \brak{\sum_{e \in E'(t)} c\brak{e}}\]
 
 
     where \begin{itemize}
         \item \(E'(t) = \cbrak{e \in \mathcal{E} \st f(t, e) \neq \{\} }\) is the set of all edges that are active at time \(t\)
         \item \(T \subset \mathbb{N}\) is the set of all time slots during which the network operates.
-        \item The output of the allocation function is a set of (\(\alpha\), n) pairs, which specify the number of qubits (n) of which demand (\(\alpha\)) the edge should transmit. This corresponds to \((\alpha_1, \gamma_1)..((\alpha_k, \gamma_k))\) here \(\Sigma_k \gamma_k \leq \Gamma\) for a given edge, and \(\alpha_k\) is a valid demand.
-    \end{itemize}, and is active.
+        \item The output of the allocation function is a set of (\(\alpha\), n) pairs, which specify the number of qubits (n) of which demand (\(\alpha\)) the edge should transmit. This corresponds to \((\alpha_1, \gamma_1)..((\alpha_k, \gamma_k))\).
+         \begin{itemize}
+            \item  Here \(\forall k \gamma_k < \alpha_k\texttt{.demand}\), i.e. the edge cannot transmit more qubits than the demand,
+            \item \(\Sigma_k \gamma_k \leq \Gamma\) for a given edge, 
+            \item Flow conservation: \(\forall t \in T\ \forall u \in V\ \forall g \in \mathcal{E}_u\  \Sigma_g f(t, g) = 0\) where \(\mathcal{E}_u\) is the set of edges incident on \(u\).
+            \item \(\alpha_k\) is a valid demand.
+        \end{itemize}
+    \end{itemize}
 
-    Furthermore, such a function obey the standard flow conservation constraints.
-    % \begin{align*}
-    %     \all t \in T, u \in V \setminus \cbrak{v \st \exists e \in E'(t) \st v \in e} \st \sum_{v \in V} \abs{f(t, u, v)} = \sum_{v \in V} \abs{f(t, v, u)} \\
-    %     \all t \in T, v \in V \setminus \cbrak{u \st \exists e \in E'(t) \st u \in e} \st \sum_{u \in V} \abs{f(t, u, v)} = \sum_{u \in V} \abs{f(t, v, u)} \\
-    % \end{align*}
+    To elaborate, in each timeslot, a link/edge \(e(c, \tau ,\Gamma)\) transmits \(\gamma \leq \Gamma\) qubits, each of which accrues a cost \(c\). Each qubit belongs to a certain demand, as qubits are only transmitted if there is a demand. We specify which demands are catered to bby any given link in each timeslot, and how many qubits of that demand are transmitted.
+
+    While the allocation function method is indeed optimal in the number of demands serviced, it may result in starvation - a single demand may be delayed indefinitely in favour of other, smaller demands. Thus, we may choose to optimise other quantities (see below).
+
+    This is a linear programming problem, and can be solved using standard techniques. However, in the interest of efficiency, it may be fruitful to pursue alternative regimes.
 
     \subsection{Routing}.
 
@@ -54,7 +63,7 @@
     
     This is ineffctive, as several topologies may attempt to funnel all data through a single link, causing queueing delays due to the severe bottleneck. While this is no flaw if we seek only to minimise the cost, it becomes pertinent for other quantites we may wish to optimise, as mentioned later.
 
-    This may be solved using a slight modification of Dijksta's shortest path algorithm. The algorithm calculates all the shortest paths from a given node to all other nodes in the network - while it is doing so, we may also calculate the capacity oof each of these paths, a divide the demand between them. 
+    This may be solved using a slight modification of Dijksta's shortest path algorithm. The algorithm calculates all the shortest paths from a given node to all other nodes in the network - while it is doing so, we may also calculate the capacity of each of these paths, a divide the demand between them. This redueces the load on any one path, and reduces the queueing delays, but does not guarantee it's elimination.
 
     Further modifications may introduce a new mertic combining both the cost and the capacity of an edge, and use this instead of the costs when calculating shortest paths. Suggestions for such metrics include their ratio, \(\frac{c}{\Gamma}\), or a saturation test: 0 if the edge is saturated, \(c\) otherwise. The latter approach assumes a knowledge of local and global network state, which may be obtained by a centralised controller, or by a distributed algorithm. 
 
@@ -102,16 +111,11 @@
 
     The cost function remains the same, but the allocation function (our potential objective) needs to be recomputed at each time instance or each time the demand vector changes.
 
-    % Clearly, such re-evaluation is not scalable, so we have two choices \begin{itemize}
-    %     \item Experiment with clever ways of reusing the previous allocation function to compute the new one.
-    %     \item Abandon the link allocation model and use standard routing algorithms. We chose not to do this for the simpler case because the link allocation function is a more general model, and we can always use it to implement a routing algorithm.
-    % \end{itemize} 
-
     \subsection{Routing}
 
-    Alternatively, if we use a routing scheme, we approach a paradigm more resembling classical networks. 
+    Alternatively, if we use a routing scheme, we approach a paradigm more resembling classical networks. Our discussion regarding routing in the previous section is still applicable, except for the recomputation costs due to changing topologies.
 
-
+    We can thus consider an algorithm that does not recompute the entire routing vector, but only those impacted by a given topology change. We may also consider distance-vector routing algorithms, where fewer routers must recompute their routing vectors as fewer routers possess information regarding the altered topology.
 
     \subsection{Oracular dynamic demands}
 
@@ -119,12 +123,5 @@
 
     \section{Fallible links}
 
-    We now consider the case where the links between nodes can fail. We assume \begin{itemize}
-        \item Links are independent, i.e. the failure of one link does not affect the failure of another. 
-        \item The failure of a link is independent of the demand on that link.
-    \end{itemize}
-
-    If the network is represented using an adjacency matrix, we can encode the probabilistic network evolution with another matrix, and multiply the two matrices to get the new adjacency matrix. 
-
-    Generally, we can leverage the extant routing algorithms for classical networks.
+    This is a Link-layer concern, and independent of the routing protocol. Thus, we will discuss this elsewhere.
 \end{document}

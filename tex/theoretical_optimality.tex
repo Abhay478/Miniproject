@@ -1,0 +1,54 @@
+\documentclass{amsart}
+
+\input{cheatsheet.tex}
+
+\begin{document}
+    \title{ Regarding optimal resource allocation in quantum networks }
+    \begin{abstract}
+        We wish to present a well-informed mathematical approach to the economics of quantum networks in the future. To do so, we discuss theoretically optimal link-bandwidth allocation and assign costs proportionate to the `importance' of a link or its ends, and also present ways to assess said importance.
+    \end{abstract}
+    \author{Abhay Shankar K, Rishit D, Sakshi Takale}
+    \maketitle
+
+    \section{Recap}
+
+    Find a function \(f \dr{T \times \mathcal{E}}{\mathcal{P}(\mathcal{D \times \mathbb{N}})}\) that minimises the cost 
+        \[\mathcal{C} = \sum_{t \in T} \brak{\sum_{e \in E'(t)} c\brak{e}}\]
+
+
+    where \begin{itemize}
+        \item \(E'(t) = \cbrak{e \in \mathcal{E} \st f(t, e) \neq \{\} }\) is the set of all edges that are active at time \(t\)
+        \item \(T \subset \mathbb{N}\) is the set of all time slots during which the network operates.
+        \item The output of the allocation function is a set of (\(\alpha\), n) pairs, which specify the number of qubits (n) of which demand (\(\alpha\)) the edge should transmit. This corresponds to \((\alpha_1, \gamma_1)..((\alpha_k, \gamma_k))\).
+         \begin{itemize}
+            \item  Here \(\forall k\ \gamma_k < \alpha_k\texttt{.demand}\), i.e. the edge cannot transmit more qubits than the demand,
+            \item \(\Sigma_k \gamma_k \leq \Gamma\) for a given edge, 
+            \item Flow conservation: \(\forall t \in T\ \forall u \in V\ \forall g \in \mathcal{E}_u\  \Sigma_g s(g)f(t, g) = 0\) where \(\mathcal{E}_u\) is the set of edges incident on \(u\) and \(s(g)\) is 1 for outgoing edges and -1 for incoming edges.
+            \item \(\alpha_k\) is a valid demand.
+        \end{itemize}
+    \end{itemize}
+
+    \section{Algorithm}
+
+    I have no clue. Big graphy stuff. Probably finding the minimum demand, find the maxflow path between the nodes, assign the demand, and ad infinitum. Also probably have to do some BFS timeslot checks to make sure the link is not full. Maybe do buffering if link at low capacity.
+
+    \label{TODO:algorithm}
+
+    \section{Heuristics}
+
+    Too many ideas. We won't know which subset of this is practical until we math it.
+    \begin{itemize}
+        \item Total link contributions from links in the path (capacity, cooldown).
+        \item Buffer size at nodes involved - that way greater chance of not being dropped.
+        \item Bottleneck bandwidth.
+        \item Node costs? 
+        \item Betweenness-centrality, except for maxflow paths? Do we need a new link attribute for this? Maybe something in the topology that creates a certain distribution (think pmf) of this shiny new attribute among all the edges?
+        \item GHZ extra cost?
+        \item Link-layer QoS guarantees? - i.e. number of times a link tries to reconstruct a qubit if measurement keeps failing before giving up. We could incorporate a QoS guarantee into the link-layer protocol.
+    \end{itemize}
+
+    \section{Sample}
+
+    So we put up a few different networks of a few different topologies (not too many) and an arbitrary demand vector, then compute the cost of each one. 
+
+\end{document}

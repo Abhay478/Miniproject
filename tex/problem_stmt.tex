@@ -7,7 +7,8 @@
     \author{Abhay Shankar K, Rishit D, Sakshi Takale}
     \maketitle
 
-    \section{Barebones}
+    % \chapter{EH}
+    \section{Theoretical optimality}
 
     We are given a static network in the form of a graph \(\mathcal{G} = \brak{V, \mathcal{E}}\), and a demand vector \(\mathcal{D}\). The demand vector is a mapping from the set of all pairs of nodes in the graph to a non-negative integer. 
 
@@ -38,11 +39,11 @@
     where \begin{itemize}
         \item \(E'(t) = \cbrak{e \in \mathcal{E} \st f(t, e) \neq \{\} }\) is the set of all edges that are active at time \(t\)
         \item \(T \subset \mathbb{N}\) is the set of all time slots during which the network operates.
-        \item The output of the allocation function is a set of (\(\alpha\), n) pairs, which specify the number of qubits (n) of which demand (\(\alpha\)) the edge should transmit. This corresponds to \((\alpha_1, \gamma_1)..((\alpha_k, \gamma_k))\).
+        \item The output of the allocation function is a set of (\(\alpha\), n) pairs, which specify the number of qubits (n) of which demand (\(\alpha\)) the edge should transmit. This corresponds to \(((\alpha_1, \gamma_1)..(\alpha_k, \gamma_k))\).
          \begin{itemize}
-            \item  Here \(\forall k \gamma_k < \alpha_k\texttt{.demand}\), i.e. the edge cannot transmit more qubits than the demand,
+            \item  Here \(\forall k\, \gamma_k < \alpha_k\texttt{.demand}\), i.e. the edge cannot transmit more qubits than the demand,
             \item \(\Sigma_k \gamma_k \leq \Gamma\) for a given edge, 
-            \item Flow conservation: \(\forall t \in T\ \forall u \in V\ \forall g \in \mathcal{E}_u\  \Sigma_g f(t, g) = 0\) where \(\mathcal{E}_u\) is the set of edges incident on \(u\).
+            \item Flow conservation: \(\forall t \in T\ \forall u \in V\ \forall g \in \mathcal{E}_u\  \Sigma_g s(g)f(t, g) = 0\) where \(\mathcal{E}_u\) is the set of edges incident on \(u\) and \(s(g)\) is 1 for outgoing edges and -1 for incoming edges.
             \item \(\alpha_k\) is a valid demand.
         \end{itemize}
     \end{itemize}

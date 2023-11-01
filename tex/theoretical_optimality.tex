@@ -32,6 +32,8 @@
 
     I have no clue. Big graphy stuff. Probably finding the minimum demand, find the maxflow path between the nodes, assign the demand, and ad infinitum. Also probably have to do some BFS timeslot checks to make sure the link is not full. Maybe do buffering if link at low capacity.
 
+    We derive inspiration from the SJF algorithm in queueing theory. We find the demand corresponding to the shortest transmission time, and add that demand to the current timeslot. We iteratively find the shortest transmission time and add that demand to the current timeslot buffer. 
+
     \label{TODO:algorithm}
 
     \section{Heuristics}

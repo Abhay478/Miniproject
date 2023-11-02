@@ -11,11 +11,20 @@
 
     We are given a static network in the form of a graph \(\mathcal{G} = \brak{V, \mathcal{E}}\), and a demand vector \(\mathcal{D}\). The demand vector is a mapping from the set of all pairs of nodes in the graph to a non-negative integer. 
 
+
+    Each node is a 2-tuple, \(\brak{c, \Gamma}\) with \begin{itemize}
+        \item \(c\) being the cost of the node,
+        \item \(\Gamma\) being the node's quantum memory.
+    \end{itemize}
+
+
     Each edge is a 3-tuple \(\brak{c, \tau, \Gamma}\) with \begin{itemize}
         \item \(c\) being the cost of the link
         \item \(\tau\) being the cooldown time
         \item \(\Gamma\) being the capacity of the link - the number of bell pairs one can send across.
     \end{itemize}
+
+    We assume (now and henceforth) that the buffer capacity of each node exceeds any link capacity.
 
     Each element of the demand vector is a 3-tuple \(\brak{u, v, d}\), with \begin{itemize}
         \item \(\alpha\): The demand number, to uniquely identify each demand.

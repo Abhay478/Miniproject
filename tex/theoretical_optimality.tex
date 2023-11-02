@@ -32,7 +32,25 @@
 
     I have no clue. Big graphy stuff. Probably finding the minimum demand, find the maxflow path between the nodes, assign the demand, and ad infinitum. Also probably have to do some BFS timeslot checks to make sure the link is not full. Maybe do buffering if link at low capacity.
 
-    We derive inspiration from the SJF algorithm in queueing theory. We find the demand corresponding to the shortest transmission time, and add that demand to the current timeslot. We iteratively find the shortest transmission time and add that demand to the current timeslot buffer. 
+    % We derive inspiration from the SJF algorithm in queueing theory. We find the demand corresponding to the shortest transmission time, and add that demand to the current timeslot. We iteratively find the shortest transmission time and add that demand to the current timeslot buffer. 
+
+    \subsection{TL;DR}
+    \begin{itemize}
+        \item Since we are aware a priori of all the demands on the network, we can use a link-state algorithm similar to OSPF, recomputing the shortest paths in each timeslot - while this remains impractical, it is merely a theoretical benchmark.
+        \item Due to congestion concerns, simply using the cost of the link is suboptimal. We instead determine a pair of heuristics in the next section, which allows us to select a path based on both local link attributes and global path attributes. In this section, we assume such heuristics, viz. \(\boldsymbol{\eta}\) for links and \(\mathcal{H}\) for paths, exist.
+    \end{itemize}
+
+    \subsection{Steps}
+
+    \begin{enumerate}
+        \item Initialise the allocation matrix representing the output of the allocation function to \(\boldsymbol{0}\). We grow this matrix with each timeslot.
+        \item For each demand, \(\alpha = \brak{u, v, d}\), we find the set \(\mathcal{P}\) of all shortest paths from \(u\) to \(v\) using \(\boldsymbol{\eta}\). We may achieve this with a modification of Dijkstra's SSSP algorithm (shown below). 
+        
+        \item We select a single path for each demand using \(\mathcal{H}\), and mark the appropriate cells in the allocation matrix.
+    \end{enumerate}
+
+
+
 
     \label{TODO:algorithm}
 
@@ -48,6 +66,12 @@
         \item GHZ extra cost?
         \item Link-layer QoS guarantees? - i.e. number of times a link tries to reconstruct a qubit if measurement keeps failing before giving up. We could incorporate a QoS guarantee into the link-layer protocol.
     \end{itemize}
+
+    Complexity in generating \(\mathcal{H}\): 
+
+    We may have buffering, where a qubit does not move in a given timeslot. Thus, \(\mathcal{H}\) needs to modify each path to account for buffering delays where consecutive duplicate nodes are inserted to indicate the same. This cannot be done elsewhere, as we require knowledge of the global qubit state to perform decisions rearding buffering.
+
+    \textbf{THIS IS BEGINNING TO FEEL LIKE AN RL PROBLEM. WHY. I CANNOT.}
 
     \section{Sample}
 

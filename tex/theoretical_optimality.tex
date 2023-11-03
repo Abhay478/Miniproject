@@ -49,6 +49,8 @@
         \item We select a single path for each demand using \(\mathcal{H}\), and mark the appropriate cells in the allocation matrix.
     \end{enumerate}
 
+    Dijkstra, except store all shortest paths.
+    Maybe not \textit{just} the shortest paths, give a little leeway. \(\boldsymbol{\eta}\) within 0.05 maybe? (Let range of \(\boldsymbol{\eta}\) be \sbrak{0, 1}).
 
 
 
@@ -60,11 +62,19 @@
     \begin{itemize}
         \item Total link contributions from links in the path (capacity, cooldown).
         \item Buffer size at nodes involved - that way greater chance of not being dropped.
-        \item Bottleneck bandwidth.
-        \item Node costs? 
-        \item Betweenness-centrality, except for maxflow paths? Do we need a new link attribute for this? Maybe something in the topology that creates a certain distribution (think pmf) of this shiny new attribute among all the edges?
-        \item GHZ extra cost?
-        \item Link-layer QoS guarantees? - i.e. number of times a link tries to reconstruct a qubit if measurement keeps failing before giving up. We could incorporate a QoS guarantee into the link-layer protocol.
+        \item Bottleneck bandwidth of the path.
+        \item Node costs! 
+        \item Betweenness-centrality, except for maxflow paths? Do we need a new link attribute for this? Maybe something in the topology that creates a certain distribution (think pmf) of this shiny new attribute among all the edges? 
+        
+        Edit: Nah. Just BWC fine.
+        \item GHZ extra cost? 
+        
+        Edit: Sakshi problem.
+
+        \item Link-layer QoS guarantees? - i.e. number of times a link tries to reconstruct a qubit if measurement keeps failing before giving up. We could incorporate a QoS guarantee into the link-layer protocol. 
+        
+        Edit: Also Sakshi problem.
+
     \end{itemize}
 
     Complexity in generating \(\mathcal{H}\): 
@@ -73,7 +83,11 @@
 
     \textbf{THIS IS BEGINNING TO FEEL LIKE AN RL PROBLEM. WHY. I CANNOT.}
 
+    Edit: Maybe do one RL, compare to various homegrown heuristics, and pick a good one. Or maybe just RL, eh.
+
     \section{Sample}
+
+    \textbf{Rishit Problem.}
 
     So we put up a few different networks of a few different topologies (not too many) and an arbitrary demand vector, then compute the cost of each one. 
 
